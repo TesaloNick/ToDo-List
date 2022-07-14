@@ -17,30 +17,33 @@
 <body>
   <div class="background"></div>
   <div class="container">
-    <form action="" class="form">
-      <div class="form__top">
-        <input type="text" class="form__input-text" placeholder="input task">
-        <select name="" id="" class="form__select">
-          <option value="">not important</option>
-          <option value="">important</option>
-          <option value="">very important</option>
-        </select>
-        <button class="form__button">ADD</button>
-      </div>
-    </form>
-    <div class="content">
-      <ul class="content__list ">
-        <li class="item">
-          <input type="checkbox" name="" class="item__checkbox">
-          <p class="item__text">sdfsdf</p>
+    <div class="wrapper">
+      <form action="" class="form">
+        <div class="form__top">
+          <input type="text" class="form__input-text" placeholder="input task">
+          <select name="" id="" class="form__select">
+            <option data-color="red" value="not started">not started</option>
+            <option data-color="orange" value="in rewiew">in rewiew</option>
+            <option data-color="blue" value="in progress">in progress</option>
+            <option data-color="green" value="completed">completed</option>
+          </select>
+          <button class="form__button">ADD</button>
+        </div>
+      </form>
+      <div class="content">
+        <ul class="content__list">
+          <!-- <input type="checkbox" name="" class="item__checkbox">
+          <p class="item__text">${input.value}</p>
+          <div class="item__progress" style='background-color: ${itemProgressColor};'>${select.value}</div>
           <div class="item__change"></div>
           <div class="item__delete">
             <span></span>
             <span></span>
-          </div>
-        </li>
-      </ul>
+          </div> -->
+        </ul>
+      </div>
     </div>
+
   </div>
 
 </body>

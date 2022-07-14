@@ -1,6 +1,9 @@
 body {
   font-family: "Montserrat", sans-serif;
 }
+.cross {
+  text-decoration: line-through;
+}
 
 .background {
   background: url(../img/background.jpg) center/cover no-repeat;
@@ -9,6 +12,7 @@ body {
   height: 100%;
   z-index: -1;
 }
+
 .container {
   display: flex;
   flex-direction: column;
@@ -22,14 +26,18 @@ body {
     padding: 30px 15px;
   }
 }
-
-.form {
+.wrapper {
+  border-radius: 10px;
   background-color: #fff;
   padding: 20px;
-
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.form {
   &__top {
     display: grid;
-    grid-template-columns: 1fr 150px 150px;
+    grid-template-columns: 1fr auto 150px;
     gap: 20px;
 
     @media (max-width: 800px) {
@@ -68,10 +76,8 @@ body {
     padding: 10px;
   }
 }
-.content {
-  background-color: #fff;
-  padding: 20px;
 
+.content {
   &__list {
     padding: 0;
     display: flex;
@@ -86,7 +92,7 @@ body {
   padding: 10px;
   display: grid;
   gap: 10px;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr 100px auto auto;
   justify-content: space-between;
   align-items: center;
 
@@ -98,6 +104,22 @@ body {
 
   &__text {
     font-size: 20px;
+  }
+
+  &__new-text {
+    background-color: rgb(230, 230, 230);
+    font-size: 20px;
+    width: 100%;
+  }
+
+  &__progress {
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
   }
 
   &__change {
