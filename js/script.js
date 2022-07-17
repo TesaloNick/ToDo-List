@@ -3,52 +3,101 @@ const input = document.querySelector('.form__input-text')
 const select = document.querySelector('.form__select')
 const add = document.querySelector('.form__button')
 const list = document.querySelector('.content__list')
-// const clearAll = document.querySelector('.clear-all')
+const contentHead = document.querySelector('.content__head')
 
-class Task {
+class Todo {
   constructor() {
+    this.tasksArray = JSON.parse(localStorage.getItem('tasks')) || []
+    this.contentHeadArray = JSON.parse(localStorage.getItem('contentHead')) || [{
+      value: 'all',
+      active: true,
+    }]
+  }
+
+  printTasks(array) {
+    list.innerHTML = ''
+    let contentHeadItem = ''
+    this.contentHeadArray.map(item => {
+      if (item.active) contentHeadItem = item.value
+    })
+
+    array.map(item => {
+      if (contentHeadItem === item.condition.value || contentHeadItem === 'all') {
+        const li = document.createElement('li');
+        li.classList.add('item');
+        li.innerHTML = `
+          ${item.checked ?
+            `<input type="checkbox" name="" class="item__checkbox" checked>
+            <p class="item__text cross" data-number=${item.number}>${item.value}</p>` :
+            `<input type="checkbox" name="" class="item__checkbox">
+            <p class="item__text" data-number=${item.number}>${item.value}</p>`}
+          <div class="item__progress" style='background-color: ${item.condition.color};'>${item.condition.value}</div>
+          <div class="item__change"></div>
+          <div class="item__delete">
+            <span></span>
+            <span></span>
+          </div>
+        `
+        list.append(li);
+      }
+    })
   }
 
   add(e) {
     e.preventDefault();
-    // find progress color of item
-    let itemProgressColor = ''
+
+    let itemProgressColor = ''    // find progress color of item
     for (let i = 0; i < select.length; i++) {
-      if (select[i].value === select.value) itemProgressColor = select[i].dataset.color
+      if (select[i].value === select.value) itemProgressColor = select[i].dataset.color;
     }
 
-    const item = document.createElement('li');
-    item.classList.add('item');
-    item.innerHTML = `
-      <input type="checkbox" name="" class="item__checkbox">
-      <p class="item__text">${input.value}</p>
-      <div class="item__progress" style='background-color: ${itemProgressColor};'>${select.value}</div>
-      <div class="item__delete">
-        <span></span>
-        <span></span>
-      </div>
-    `
-    list.append(item);
+    this.tasksArray.push({
+      number: Math.round(Math.random() * 10000000),
+      checked: false,
+      value: input.value,
+      condition: {
+        value: select.value,
+        color: itemProgressColor,
+      },
+    })
+    localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+    this.printTasks(this.tasksArray)
+    console.log(this.tasksArray);
     input.value = '';
   }
 
-  newText(e) {
-    if (e.key === "Enter" && e.target.closest('.item__text')) {
+  check(e) {
+    if (e.target.closest('.item__checkbox')) {
+      this.tasksArray.map(item => {
+        if (+e.target.closest('.item').querySelector('.item__text').dataset.number === +item.number) {
+          item.checked === false ? item.checked = true : item.checked = false
+        }
+      })
+
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+      this.printTasks(this.tasksArray)
+      console.log(this.tasksArray);
+    }
+
+  }
+
+  changeItem(e) {
+    if (e.type === 'keypress' && e.key === "Enter" && e.target.closest('.item__text')) {
       e.preventDefault();
-      e.target.closest('.item__text').innerHTML = e.target.value
+      this.tasksArray.map(item => {
+        if (+e.target.closest('.item').querySelector('.item__text').dataset.number === +item.number) {
+          item.value = e.target.value
+        }
+      })
+
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+      this.printTasks(this.tasksArray)
+      console.log(this.tasksArray);
     }
   }
 
-  check(e) {
-    if (e.target.closest('.item__checkbox')) e.target.closest('.item').querySelector('.item__text').classList.toggle('cross')
-  }
-
-  delete(e) {
-    if (e.target.closest('.item__delete')) e.target.closest('.item').remove()
-  }
-
-  change(e) {
-    if (e.target.closest('.item__text')) {
+  addInputForChanging(e) {
+    if ((e.target.closest('.item__text') && e.type === 'dblclick') || (e.target.closest('.item__change') && e.type === 'click')) {
       const inputForChanging = e.target.closest('.item').querySelector('.item__text')
       inputForChanging.innerHTML = `
         <input type="text" class="item__new-text" value='${inputForChanging.textContent}'>
@@ -57,15 +106,74 @@ class Task {
     }
   }
 
-  clearAll(e) {
-    list.innerHTML = ''
+  delete(e) {
+    if (e.target.closest('.item__delete')) {
+      let resultArray = this.tasksArray.filter(item => +e.target.closest('.item').querySelector('.item__text').dataset.number !== +item.number)
+      this.tasksArray = resultArray
+
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+      this.printTasks(this.tasksArray)
+      console.log(this.tasksArray);
+    }
   }
 
+  printContentHead() {
+    contentHead.innerHTML = ''
+    this.contentHeadArray.map(item => {
+      const div = document.createElement('div');
+      div.classList.add('content__head_item');
+      div.innerHTML = item.active ?
+        `<div class="content__head_item active">${item.value}</div>` :
+        `<div class="content__head_item">${item.value}</div>`
+      contentHead.append(div);
+    })
+  }
+
+  changeContentHead(e) {
+    if (e.target.closest('.content__head_item')) {
+      this.contentHeadArray.map(item => { //print animation of ghanging group
+        if (e.target.textContent === item.value) {
+          item.active = true
+        } else {
+          item.active = false
+        }
+      })
+
+      if (e.target.textContent === 'all') {
+        this.printTasks(this.tasksArray)
+      } else {
+        let newTasksArray = this.tasksArray.filter(item => e.target.textContent === item.condition.value)
+        this.printTasks(newTasksArray)
+      }
+
+      localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
+      this.printContentHead()
+    }
+  }
+
+  getContentHeadArray() {
+    localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
+    if (JSON.parse(localStorage.getItem('contentHead')).length <= 1) {
+      for (let item of select.children) {
+        this.contentHeadArray.push({
+          value: item.textContent,
+          active: false
+        })
+      }
+    }
+    localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
+  }
 }
 
-let task = new Task();
+let task = new Todo();
+task.getContentHeadArray()
+task.printContentHead()
+task.printTasks(task.tasksArray)
 form.addEventListener('submit', (e) => task.add(e));
 list.addEventListener('click', (e) => task.delete(e));
-list.addEventListener('dblclick', (e) => task.change(e));
+list.addEventListener('dblclick', (e) => task.addInputForChanging(e));
+list.addEventListener('click', (e) => task.addInputForChanging(e));
 list.addEventListener('click', (e) => task.check(e));
-list.addEventListener("keypress", (e) => task.newText(e))
+list.addEventListener("keypress", (e) => task.changeItem(e))
+list.addEventListener("click", (e) => task.changeItem(e))
+contentHead.addEventListener("click", (e) => task.changeContentHead(e))

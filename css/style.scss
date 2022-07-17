@@ -78,6 +78,22 @@ body {
 }
 
 .content {
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+
+    &_item {
+      font-size: 16px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      flex: 1 1 auto;
+      &.active {
+        border-bottom: 3px solid rgb(230, 230, 230);
+      }
+    }
+  }
+
   &__list {
     padding: 0;
     display: flex;
@@ -86,6 +102,7 @@ body {
     margin: auto;
   }
 }
+
 .item {
   background-color: rgb(230, 230, 230);
   border-radius: 5px;
@@ -104,12 +121,18 @@ body {
 
   &__text {
     font-size: 20px;
+    // display: block;
+    height: 100%;
+    display: flex;
+    align-items: center;
   }
 
   &__new-text {
     background-color: rgb(230, 230, 230);
     font-size: 20px;
     width: 100%;
+    display: flex;
+    align-items: center;
   }
 
   &__progress {
