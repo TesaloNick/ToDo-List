@@ -3,9 +3,10 @@ const input = document.querySelector('.form__input-text')
 const select = document.querySelector('.form__select')
 const add = document.querySelector('.form__button')
 const list = document.querySelector('.content__list')
+const date = document.querySelector('.form-control')
 const contentHead = document.querySelector('.content__head')
 
-class ContentHead {
+class Content {
   constructor() {
     this.tasksArray = JSON.parse(localStorage.getItem('tasks')) || []
     this.contentHeadArray = JSON.parse(localStorage.getItem('contentHead')) || [{
@@ -14,7 +15,21 @@ class ContentHead {
     }]
   }
 
+  getContentHeadArray() {
+    localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
+    if (JSON.parse(localStorage.getItem('contentHead')).length <= 1) {
+      for (let item of select.children) {
+        this.contentHeadArray.push({
+          value: item.textContent,
+          active: false
+        })
+      }
+    }
+    localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
+  }
+
   printContentHead() {
+    this.getContentHeadArray()
     contentHead.innerHTML = ''
     this.contentHeadArray.map(item => {
       const div = document.createElement('div');
@@ -38,7 +53,6 @@ class ContentHead {
       })
 
       if (e.target.textContent === 'all') {
-        console.log(this.tasksArray);
         this.printTasks(this.tasksArray)
       } else {
         let newTasksArray = this.tasksArray.filter(item => e.target.textContent === item.condition.value)
@@ -50,20 +64,8 @@ class ContentHead {
     }
   }
 
-  getContentHeadArray() {
-    localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
-    if (JSON.parse(localStorage.getItem('contentHead')).length <= 1) {
-      for (let item of select.children) {
-        this.contentHeadArray.push({
-          value: item.textContent,
-          active: false
-        })
-      }
-    }
-    localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
-  }
-
   printTasks(array) {
+    this.printContentHead()
     list.innerHTML = ''
     let contentHeadItem = ''
     this.contentHeadArray.map(item => {
@@ -74,12 +76,14 @@ class ContentHead {
       if (contentHeadItem === item.condition.value || contentHeadItem === 'all') {
         const li = document.createElement('li');
         li.classList.add('item');
+        console.log(date.value);
         li.innerHTML = `
           ${item.checked ?
             `<input type="checkbox" name="" class="item__checkbox" checked>
             <p class="item__text cross" data-number=${item.number}>${item.value}</p>` :
             `<input type="checkbox" name="" class="item__checkbox">
             <p class="item__text" data-number=${item.number}>${item.value}</p>`}
+          <div class="item__date">${item.date}</div>
           <div class="item__progress" style='background-color: ${item.condition.color};'>${item.condition.value}</div>
           <div class="item__change"></div>
           <div class="item__delete">
@@ -93,11 +97,10 @@ class ContentHead {
   }
 }
 
-class Todo extends ContentHead {
-  constructor() {
-    super()
-  }
-
+class List extends Content {
+  // constructor() {
+  //   super()
+  // }
 
   add(e) {
     e.preventDefault();
@@ -111,6 +114,7 @@ class Todo extends ContentHead {
         number: Math.round(Math.random() * 10000000),
         checked: false,
         value: input.value,
+        date: date.value,
         condition: {
           value: select.value,
           color: itemProgressColor,
@@ -181,12 +185,9 @@ class Todo extends ContentHead {
   }
 }
 
-let contentHeadClass = new ContentHead();
-contentHeadClass.getContentHeadArray()
-contentHeadClass.printContentHead()
-contentHead.addEventListener("click", (e) => contentHeadClass.changeContentHead(e))
-let task = new Todo();
+let task = new List();
 task.printTasks(task.tasksArray)
+contentHead.addEventListener("click", (e) => task.changeContentHead(e))
 form.addEventListener('submit', (e) => task.add(e));
 list.addEventListener('click', (e) => task.delete(e));
 list.addEventListener('dblclick', (e) => task.addInputForChanging(e));
@@ -194,3 +195,10 @@ list.addEventListener('click', (e) => task.addInputForChanging(e));
 list.addEventListener('click', (e) => task.check(e));
 list.addEventListener("keypress", (e) => task.changeItem(e))
 list.addEventListener("click", (e) => task.changeItem(e))
+
+$('#sandbox-container input').datepicker({
+  format: "dd/mm/yyyy",
+  language: "ru",
+  autoclose: true,
+  todayHighlight: true
+});

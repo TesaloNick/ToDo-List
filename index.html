@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  <link rel="stylesheet" href="./css/bootstrap-datepicker3.min.css">
   <script defer src="./js/script.js"></script>
 </head>
 
@@ -27,17 +30,14 @@
             <option data-color="blue" value="in progress">in progress</option>
             <option data-color="green" value="completed">completed</option>
           </select>
+          <div class="form__date" id="sandbox-container">
+            <input type="text" class="form-control">
+          </div>
           <button class="form__button">ADD</button>
         </div>
       </form>
       <div class="content">
-        <div class="content__head">
-          <!-- <div class="content__head_item">all</div>
-          <div class="content__head_item">not started</div>
-          <div class="content__head_item active">in rewiew</div>
-          <div class="content__head_item">in progress</div>
-          <div class="content__head_item">completed</div> -->
-        </div>
+        <div class="content__head"></div>
         <ul class="content__list">
           <!-- <input type="checkbox" name="" class="item__checkbox">
           <p class="item__text">${input.value}</p>
@@ -53,6 +53,12 @@
 
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="./js/jquery-3.6.0.min.js"></script>
+  <script src="./js/bootstrap-datepicker.min.js"></script>
+  <script src="./js/bootstrap-datepicker.ru.min.js"></script>
 </body>
 
 </html>
