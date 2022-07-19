@@ -21,7 +21,8 @@ class Content {
       for (let item of select.children) {
         this.contentHeadArray.push({
           value: item.textContent,
-          active: false
+          active: false,
+          color: item.dataset.color,
         })
       }
     }
@@ -90,7 +91,7 @@ class Content {
             `<input type="checkbox" name="" class="item__checkbox">
             <p class="item__text" data-number=${item.number}>${item.value}</p>`}
           <div class="item__date">${item.date}</div>
-          <div class="item__progress" style='background-color: ${item.condition.color};'>${item.condition.value}</div>
+          <div class="item__condition" style='background-color: ${item.condition.color};'>${item.condition.value}</div>
           <div class="item__change"></div>
           <div class="item__delete">
             <span></span>
@@ -114,10 +115,6 @@ class Content {
 }
 
 class List extends Content {
-  // constructor() {
-  //   super()
-  // }
-
   add(e) {
     e.preventDefault();
     if (input.value.length > 0) {
@@ -181,12 +178,50 @@ class List extends Content {
     }
   }
 
+  printReasConditions(e) {
+    if (e.target.classList.contains('item__condition')) {
+      if (!e.target.contains(list.querySelector('.item__condition_rests'))) {
+        let targetTextContent = e.target.textContent
+        const additionalConditions = document.createElement('div');
+        additionalConditions.classList.add('item__condition_rests');
+
+        this.contentHeadArray.map(item => {
+          e.target.closest('.item__condition').append(additionalConditions)
+          if (item.value !== 'all' && item.value !== targetTextContent) {
+            const additionalCondition = document.createElement('div');
+            additionalCondition.classList.add('item__condition_rest');
+            additionalCondition.innerHTML = item.value
+            additionalCondition.style.backgroundColor = item.color
+            additionalConditions.append(additionalCondition)
+          }
+        })
+      } else {
+        e.target.querySelector('.item__condition_rests').remove()
+      }
+    }
+  }
+
+  changeItemCondition(e) {
+    if (e.target.closest('.item__condition_rest')) {
+      this.tasksArray.map(item => {
+        if (e.target.closest('.item').querySelector('.item__text').dataset.number == item.number) {
+          item.condition.value = e.target.textContent
+          item.condition.color = e.target.style.backgroundColor
+        }
+      })
+
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+      this.printTasks(this.tasksArray)
+      console.log(this.tasksArray);
+    }
+  }
+
   addInputForChanging(e) {
     if ((e.target.closest('.item__text') && e.type === 'dblclick') || (e.target.closest('.item__change') && e.type === 'click')) {
       const inputForChanging = e.target.closest('.item').querySelector('.item__text')
       inputForChanging.innerHTML = `
-        <input type="text" class="item__new-text" value='${inputForChanging.textContent}'>
-      `
+        < input type = "text" class="item__new-text" value = '${inputForChanging.textContent}' >
+          `
       inputForChanging.querySelector('.item__new-text').focus()
     }
   }
@@ -207,11 +242,15 @@ let task = new List();
 task.printTasks(task.tasksArray)
 contentHead.addEventListener("click", (e) => task.changeContentHead(e))
 form.addEventListener('submit', (e) => task.add(e));
-list.addEventListener('click', (e) => task.delete(e));
+list.addEventListener('click', (e) => {
+  task.delete(e)
+  task.addInputForChanging(e)
+  task.check(e)
+  task.changeItem(e)
+  task.printReasConditions(e)
+  task.changeItemCondition(e)
+});
 list.addEventListener('dblclick', (e) => task.addInputForChanging(e));
-list.addEventListener('click', (e) => task.addInputForChanging(e));
-list.addEventListener('click', (e) => task.check(e));
 list.addEventListener("keypress", (e) => task.changeItem(e))
-list.addEventListener("click", (e) => task.changeItem(e))
 
 
