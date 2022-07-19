@@ -106,8 +106,8 @@ class Content {
 
   sortPerDate() {
     this.tasksArray.sort((firstDate, secondDate) => {
-      let firstDateCode = firstDate.date.match(/[0-9]+/gm)[0] + firstDate.date.match(/[0-9]+/gm)[2] * 31 + firstDate.date.match(/[0-9]+/gm)[2] * 372
-      let secondDateCode = secondDate.date.match(/[0-9]+/gm)[0] + secondDate.date.match(/[0-9]+/gm)[2] * 31 + secondDate.date.match(/[0-9]+/gm)[2] * 372
+      let firstDateCode = +firstDate.date.match(/[0-9]+/gm)[0] + +firstDate.date.match(/[0-9]+/gm)[1] * 100 + +firstDate.date.match(/[0-9]+/gm)[2] * 1000
+      let secondDateCode = +secondDate.date.match(/[0-9]+/gm)[0] + +secondDate.date.match(/[0-9]+/gm)[1] * 100 + +secondDate.date.match(/[0-9]+/gm)[2] * 1000
       return firstDateCode - secondDateCode
     })
   }
@@ -138,6 +138,7 @@ class List extends Content {
       })
 
       localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+      this.sortPerDate()
       this.printTasks(this.tasksArray)
       console.log(this.tasksArray);
       input.value = '';
