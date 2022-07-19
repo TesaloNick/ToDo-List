@@ -9,6 +9,7 @@ const contentHead = document.querySelector('.content__head')
 class Content {
   constructor() {
     this.tasksArray = JSON.parse(localStorage.getItem('tasks')) || []
+    this.completedTasksArray = JSON.parse(localStorage.getItem('completedTasks')) || []
     this.contentHeadArray = JSON.parse(localStorage.getItem('contentHead')) || [{
       value: 'all',
       active: true,
@@ -74,6 +75,7 @@ class Content {
 
   printTasks(array) {
     this.printContentHead()
+    this.sortPerDate()
     list.innerHTML = ''
     let contentHeadItem = ''
     this.contentHeadArray.map(item => {
@@ -101,16 +103,17 @@ class Content {
         list.append(li);
       }
     })
-
-    this.sortPerDate()
   }
 
   sortPerDate() {
-    this.tasksArray.sort((firstDate, secondDate) => {
-      let firstDateCode = +firstDate.date.match(/[0-9]+/gm)[0] + +firstDate.date.match(/[0-9]+/gm)[1] * 100 + +firstDate.date.match(/[0-9]+/gm)[2] * 1000
-      let secondDateCode = +secondDate.date.match(/[0-9]+/gm)[0] + +secondDate.date.match(/[0-9]+/gm)[1] * 100 + +secondDate.date.match(/[0-9]+/gm)[2] * 1000
-      return firstDateCode - secondDateCode
+    this.tasksArray.sort((firstItem, secondItem) => {
+      let firstItemCode = +firstItem.date.match(/[0-9]+/gm)[0] + +firstItem.date.match(/[0-9]+/gm)[1] * 100 + +firstItem.date.match(/[0-9]+/gm)[2] * 1000
+      let secondItemCode = +secondItem.date.match(/[0-9]+/gm)[0] + +secondItem.date.match(/[0-9]+/gm)[1] * 100 + +secondItem.date.match(/[0-9]+/gm)[2] * 1000
+      if (firstItem.condition.value === 'completed' || firstItem.checked == true) firstItemCode += 10000000
+      if (secondItem.condition.value === 'completed' || secondItem.checked == true) secondItemCode += 10000000
+      return firstItemCode - secondItemCode
     })
+    localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
   }
 }
 
@@ -135,7 +138,6 @@ class List extends Content {
       })
 
       localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
-      this.sortPerDate()
       this.printTasks(this.tasksArray)
       console.log(this.tasksArray);
       input.value = '';
@@ -160,7 +162,6 @@ class List extends Content {
       this.printTasks(this.tasksArray)
       console.log(this.tasksArray);
     }
-
   }
 
   changeItem(e) {
@@ -178,7 +179,7 @@ class List extends Content {
     }
   }
 
-  printReasConditions(e) {
+  printItemConditions(e) {
     if (e.target.classList.contains('item__condition')) {
       if (!e.target.contains(list.querySelector('.item__condition_rests'))) {
         let targetTextContent = e.target.textContent
@@ -205,8 +206,8 @@ class List extends Content {
     if (e.target.closest('.item__condition_rest')) {
       this.tasksArray.map(item => {
         if (e.target.closest('.item').querySelector('.item__text').dataset.number == item.number) {
-          item.condition.value = e.target.textContent
           item.condition.color = e.target.style.backgroundColor
+          item.condition.value = e.target.textContent
         }
       })
 
@@ -242,12 +243,13 @@ let task = new List();
 task.printTasks(task.tasksArray)
 contentHead.addEventListener("click", (e) => task.changeContentHead(e))
 form.addEventListener('submit', (e) => task.add(e));
+date.addEventListener('submit', (e) => task.add(e));
 list.addEventListener('click', (e) => {
   task.delete(e)
   task.addInputForChanging(e)
   task.check(e)
   task.changeItem(e)
-  task.printReasConditions(e)
+  task.printItemConditions(e)
   task.changeItemCondition(e)
 });
 list.addEventListener('dblclick', (e) => task.addInputForChanging(e));
