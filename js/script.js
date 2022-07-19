@@ -29,6 +29,13 @@ class Content {
   }
 
   printContentHead() {
+    $('#sandbox-container input').datepicker({
+      format: "dd.mm.yyyy",
+      language: "ru",
+      autoclose: true,
+      todayHighlight: true
+    });
+
     this.getContentHeadArray()
     contentHead.innerHTML = ''
     this.contentHeadArray.map(item => {
@@ -76,7 +83,6 @@ class Content {
       if (contentHeadItem === item.condition.value || contentHeadItem === 'all') {
         const li = document.createElement('li');
         li.classList.add('item');
-        console.log(date.value);
         li.innerHTML = `
           ${item.checked ?
             `<input type="checkbox" name="" class="item__checkbox" checked>
@@ -93,6 +99,16 @@ class Content {
         `
         list.append(li);
       }
+    })
+
+    this.sortPerDate()
+  }
+
+  sortPerDate() {
+    this.tasksArray.sort((firstDate, secondDate) => {
+      let firstDateCode = firstDate.date.match(/[0-9]+/gm)[0] + firstDate.date.match(/[0-9]+/gm)[2] * 31 + firstDate.date.match(/[0-9]+/gm)[2] * 372
+      let secondDateCode = secondDate.date.match(/[0-9]+/gm)[0] + secondDate.date.match(/[0-9]+/gm)[2] * 31 + secondDate.date.match(/[0-9]+/gm)[2] * 372
+      return firstDateCode - secondDateCode
     })
   }
 }
@@ -125,10 +141,11 @@ class List extends Content {
       this.printTasks(this.tasksArray)
       console.log(this.tasksArray);
       input.value = '';
-      input.placeholder = 'input task';
+      date.value = '';
+      input.placeholder = 'task';
       input.classList.remove('wrong')
     } else {
-      input.placeholder = 'ERROR. Input value';
+      input.placeholder = 'ERROR. Input task';
       input.classList.add('wrong')
     }
   }
@@ -196,9 +213,4 @@ list.addEventListener('click', (e) => task.check(e));
 list.addEventListener("keypress", (e) => task.changeItem(e))
 list.addEventListener("click", (e) => task.changeItem(e))
 
-$('#sandbox-container input').datepicker({
-  format: "dd/mm/yyyy",
-  language: "ru",
-  autoclose: true,
-  todayHighlight: true
-});
+
