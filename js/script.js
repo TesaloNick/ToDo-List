@@ -221,8 +221,8 @@ class List extends Content {
     if ((e.target.closest('.item__text') && e.type === 'dblclick') || (e.target.closest('.item__change') && e.type === 'click')) {
       const inputForChanging = e.target.closest('.item').querySelector('.item__text')
       inputForChanging.innerHTML = `
-        < input type = "text" class="item__new-text" value = '${inputForChanging.textContent}' >
-          `
+          <input type = "text" class="item__new-text" value = '${inputForChanging.textContent}'>
+        `
       inputForChanging.querySelector('.item__new-text').focus()
     }
   }
