@@ -106,14 +106,14 @@ class Content {
   }
 
   sortPerDate() {
-    this.tasksArray.sort((firstItem, secondItem) => {
-      let firstItemCode = +firstItem.date.match(/[0-9]+/gm)[0] + +firstItem.date.match(/[0-9]+/gm)[1] * 100 + +firstItem.date.match(/[0-9]+/gm)[2] * 1000
-      let secondItemCode = +secondItem.date.match(/[0-9]+/gm)[0] + +secondItem.date.match(/[0-9]+/gm)[1] * 100 + +secondItem.date.match(/[0-9]+/gm)[2] * 1000
-      if (firstItem.condition.value === 'completed' || firstItem.checked == true) firstItemCode += 10000000
-      if (secondItem.condition.value === 'completed' || secondItem.checked == true) secondItemCode += 10000000
-      return firstItemCode - secondItemCode
-    })
-    localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+    // this.tasksArray.sort((firstItem, secondItem) => {
+    //   let firstItemCode = +firstItem.date.match(/[0-9]+/gm)[0] + +firstItem.date.match(/[0-9]+/gm)[1] * 100 + +firstItem.date.match(/[0-9]+/gm)[2] * 1000
+    //   let secondItemCode = +secondItem.date.match(/[0-9]+/gm)[0] + +secondItem.date.match(/[0-9]+/gm)[1] * 100 + +secondItem.date.match(/[0-9]+/gm)[2] * 1000
+    //   if (firstItem.condition.value === 'completed' || firstItem.checked == true) firstItemCode += 10000000
+    //   if (secondItem.condition.value === 'completed' || secondItem.checked == true) secondItemCode += 10000000
+    //   return firstItemCode - secondItemCode
+    // })
+    // localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
   }
 }
 
@@ -237,6 +237,29 @@ class List extends Content {
       console.log(this.tasksArray);
     }
   }
+
+  catchItem(e) {
+    if (e.target.closest('.item')) {
+      const item = e.target.closest('.item')
+
+
+      list.addEventListener('mousemove', () => this.moveItem(e, item))
+      item.addEventListener('mouseup', () => {
+        list.removeEventListener('mousemove', this.moveItem(e, item));
+        item.onmouseup = null;
+      })
+    }
+  }
+
+  moveItem(e, item) {
+    // let shiftX = e.clientX - item.getBoundingClientRect().left;
+    // let shiftY = e.clientY - item.getBoundingClientRect().top;
+    console.log(item);
+    item.style.position = 'absolute';
+    item.style.zIndex = 1000;
+    item.style.left = e.pageX + 'px';
+    item.style.top = e.pageY + 'px';
+  }
 }
 
 let task = new List();
@@ -252,6 +275,7 @@ list.addEventListener('click', (e) => {
   task.printItemConditions(e)
   task.changeItemCondition(e)
 });
+list.addEventListener('mousedown', (e) => task.catchItem(e));
 list.addEventListener('dblclick', (e) => task.addInputForChanging(e));
 list.addEventListener("keypress", (e) => task.changeItem(e))
 
