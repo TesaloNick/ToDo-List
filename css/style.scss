@@ -1,5 +1,6 @@
 body {
   font-family: "Montserrat", sans-serif;
+  position: relative;
 }
 .cross {
   text-decoration: line-through;
@@ -117,7 +118,7 @@ body {
     flex-direction: column;
     gap: 20px;
     margin-bottom: 0;
-    position: relative;
+    // position: relative;
   }
 }
 
@@ -169,6 +170,8 @@ body {
     align-items: center;
     color: #fff;
     position: relative;
+    // transform: rotate();
+    // z-index: 1;
 
     &_rests {
       position: absolute;
@@ -176,6 +179,7 @@ body {
       display: flex;
       flex-direction: column;
       top: 100%;
+      // z-index: 2;
     }
 
     &_rest {
@@ -184,7 +188,7 @@ body {
       border-radius: 3px;
       padding: 5px;
       justify-content: center;
-      z-index: 1;
+      z-index: 2;
     }
   }
 

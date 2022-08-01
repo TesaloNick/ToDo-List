@@ -101,6 +101,7 @@ class Content {
           </div>
         `
         list.append(li);
+        item.heightLocation = li.getBoundingClientRect().top
       }
     })
   }
@@ -114,10 +115,18 @@ class Content {
     //   return firstItemCode - secondItemCode
     // })
     // localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+    this.tasksArray.sort((firstItem, secondItem) => {
+      return firstItem.heightLocation - secondItem.heightLocation
+    })
   }
 }
 
 class List extends Content {
+  constructor() {
+    super()
+    this.counter = JSON.parse(localStorage.getItem('counter')) || 0
+  }
+
   add(e) {
     e.preventDefault();
     if (input.value.length > 0) {
@@ -127,7 +136,7 @@ class List extends Content {
       }
 
       this.tasksArray.push({
-        number: Math.round(Math.random() * 10000000),
+        number: this.counter,
         checked: false,
         value: input.value,
         date: date.value,
@@ -137,8 +146,10 @@ class List extends Content {
         },
       })
 
-      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+      this.counter++
       this.printTasks(this.tasksArray)
+      localStorage.setItem('counter', JSON.stringify(this.counter))
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       console.log(this.tasksArray);
       input.value = '';
       date.value = '';
@@ -158,8 +169,8 @@ class List extends Content {
         }
       })
 
-      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       this.printTasks(this.tasksArray)
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       console.log(this.tasksArray);
     }
   }
@@ -173,8 +184,8 @@ class List extends Content {
         }
       })
 
-      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       this.printTasks(this.tasksArray)
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       console.log(this.tasksArray);
     }
   }
@@ -211,8 +222,8 @@ class List extends Content {
         }
       })
 
-      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       this.printTasks(this.tasksArray)
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       console.log(this.tasksArray);
     }
   }
@@ -232,33 +243,53 @@ class List extends Content {
       let resultArray = this.tasksArray.filter(item => e.target.closest('.item').querySelector('.item__text').dataset.number != item.number)
       this.tasksArray = resultArray
 
-      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       this.printTasks(this.tasksArray)
+      localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
       console.log(this.tasksArray);
     }
   }
 
   catchItem(e) {
     if (e.target.closest('.item')) {
-      const item = e.target.closest('.item')
+      let item = e.target.closest('.item')
+      let background = document.createElement('div')
+      let shiftY = e.clientY - item.getBoundingClientRect().top;
 
+      function onMouseMove(event) {
+        background.style.height = item.clientHeight + 'px'
+        background.style.width = item.clientWidth + 'px'
+        background.style.borderRadius = '5px'
+        background.style.backgroundColor = '#bfbfbf'
+        item.insertAdjacentElement('afterend', background)
 
-      list.addEventListener('mousemove', () => this.moveItem(e, item))
-      item.addEventListener('mouseup', () => {
-        list.removeEventListener('mousemove', this.moveItem(e, item));
-        item.onmouseup = null;
+        item.style.position = 'absolute';
+        item.style.zIndex = 1000;
+        item.style.width = list.clientWidth + 'px'
+        item.style.top = event.pageY - shiftY + 'px';
+      }
+
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', (event) => {
+        document.removeEventListener('mousemove', onMouseMove);
+        console.dir(background);
+        if (background.clientHeight > 0) {
+          background.remove()
+          item.style.position = 'relative';
+          item.style.top = 'auto'
+          item.style.zIndex = 'auto';
+          this.tasksArray.map(task => {
+            if (item.querySelector('.item__text').dataset.number == task.number) {
+              task.heightLocation = event.pageY - shiftY
+            }
+          })
+          this.sortPerDate()
+          this.printTasks(this.tasksArray)
+          localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+        }
+
+        return null
       })
     }
-  }
-
-  moveItem(e, item) {
-    // let shiftX = e.clientX - item.getBoundingClientRect().left;
-    // let shiftY = e.clientY - item.getBoundingClientRect().top;
-    console.log(item);
-    item.style.position = 'absolute';
-    item.style.zIndex = 1000;
-    item.style.left = e.pageX + 'px';
-    item.style.top = e.pageY + 'px';
   }
 }
 
