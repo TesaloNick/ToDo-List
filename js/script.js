@@ -286,9 +286,26 @@ class List extends Content {
           this.printTasks(this.tasksArray)
           localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
         }
-
-        return null
       })
+      // document.onmouseup = function (event) {
+      //   document.removeEventListener('mousemove', onMouseMove);
+      //   console.dir(background);
+      //   if (background.clientHeight > 0) {
+      //     background.remove()
+      //     item.style.position = 'relative';
+      //     item.style.top = 'auto'
+      //     item.style.zIndex = 'auto';
+      //     this.tasksArray.map(task => {
+      //       if (item.querySelector('.item__text').dataset.number == task.number) {
+      //         task.heightLocation = event.pageY - shiftY
+      //       }
+      //     })
+      //     this.sortPerDate()
+      //     this.printTasks(this.tasksArray)
+      //     localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
+      //   }
+      //   document.onmouseup = null
+      // }
     }
   }
 }
