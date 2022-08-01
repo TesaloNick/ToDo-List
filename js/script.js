@@ -15,6 +15,10 @@ class Content {
       active: true,
     }]
   }
+  events() {
+    task.printTasks(this.tasksArray)
+    contentHead.addEventListener("click", (e) => this.changeContentHead(e))
+  }
 
   getContentHeadArray() {
     localStorage.setItem('contentHead', JSON.stringify(this.contentHeadArray))
@@ -127,6 +131,24 @@ class List extends Content {
     this.counter = JSON.parse(localStorage.getItem('counter')) || 0
   }
 
+  events() {
+    super.events()
+
+    form.addEventListener('submit', (e) => this.add(e));
+    date.addEventListener('submit', (e) => this.add(e));
+    list.addEventListener('click', (e) => {
+      this.delete(e)
+      this.addInputForChanging(e)
+      this.check(e)
+      this.changeItem(e)
+      this.printItemConditions(e)
+      this.changeItemCondition(e)
+    });
+    list.addEventListener('mousedown', (e) => this.catchItem(e));
+    list.addEventListener('dblclick', (e) => this.addInputForChanging(e));
+    list.addEventListener("keypress", (e) => this.changeItem(e))
+  }
+
   add(e) {
     e.preventDefault();
     if (input.value.length > 0) {
@@ -150,7 +172,6 @@ class List extends Content {
       this.printTasks(this.tasksArray)
       localStorage.setItem('counter', JSON.stringify(this.counter))
       localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
-      console.log(this.tasksArray);
       input.value = '';
       date.value = '';
       input.placeholder = 'task';
@@ -171,7 +192,6 @@ class List extends Content {
 
       this.printTasks(this.tasksArray)
       localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
-      console.log(this.tasksArray);
     }
   }
 
@@ -186,7 +206,6 @@ class List extends Content {
 
       this.printTasks(this.tasksArray)
       localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
-      console.log(this.tasksArray);
     }
   }
 
@@ -224,7 +243,6 @@ class List extends Content {
 
       this.printTasks(this.tasksArray)
       localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
-      console.log(this.tasksArray);
     }
   }
 
@@ -245,7 +263,6 @@ class List extends Content {
 
       this.printTasks(this.tasksArray)
       localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
-      console.log(this.tasksArray);
     }
   }
 
@@ -268,10 +285,9 @@ class List extends Content {
         item.style.top = event.pageY - shiftY + 'px';
       }
 
-      document.addEventListener('mousemove', onMouseMove)
-      document.addEventListener('mouseup', (event) => {
+      function onMouseUp(event) {
         document.removeEventListener('mousemove', onMouseMove);
-        console.dir(background);
+
         if (background.clientHeight > 0) {
           background.remove()
           item.style.position = 'relative';
@@ -286,45 +302,16 @@ class List extends Content {
           this.printTasks(this.tasksArray)
           localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
         }
-      })
-      // document.onmouseup = function (event) {
-      //   document.removeEventListener('mousemove', onMouseMove);
-      //   console.dir(background);
-      //   if (background.clientHeight > 0) {
-      //     background.remove()
-      //     item.style.position = 'relative';
-      //     item.style.top = 'auto'
-      //     item.style.zIndex = 'auto';
-      //     this.tasksArray.map(task => {
-      //       if (item.querySelector('.item__text').dataset.number == task.number) {
-      //         task.heightLocation = event.pageY - shiftY
-      //       }
-      //     })
-      //     this.sortPerDate()
-      //     this.printTasks(this.tasksArray)
-      //     localStorage.setItem('tasks', JSON.stringify(this.tasksArray))
-      //   }
-      //   document.onmouseup = null
-      // }
+        document.onmouseup = null
+      }
+
+      document.addEventListener('mousemove', onMouseMove)
+      document.onmouseup = onMouseUp.bind(this)
     }
   }
 }
 
 let task = new List();
-task.printTasks(task.tasksArray)
-contentHead.addEventListener("click", (e) => task.changeContentHead(e))
-form.addEventListener('submit', (e) => task.add(e));
-date.addEventListener('submit', (e) => task.add(e));
-list.addEventListener('click', (e) => {
-  task.delete(e)
-  task.addInputForChanging(e)
-  task.check(e)
-  task.changeItem(e)
-  task.printItemConditions(e)
-  task.changeItemCondition(e)
-});
-list.addEventListener('mousedown', (e) => task.catchItem(e));
-list.addEventListener('dblclick', (e) => task.addInputForChanging(e));
-list.addEventListener("keypress", (e) => task.changeItem(e))
+task.events()
 
 
